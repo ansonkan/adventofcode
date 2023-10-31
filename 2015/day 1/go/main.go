@@ -1,22 +1,16 @@
 package main
 
 import (
+	"aoc/utils"
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os"
 )
 
-func check(e error) {
-	if e != nil {
-		log.Fatal(e)
-	}
-}
-
 func Part1_ReadFile(filename string) int {
 	dat, err := os.ReadFile(filename)
-	check(err)
+	utils.Check(err)
 
 	str := string(dat)
 
@@ -35,7 +29,7 @@ func Part1_ReadFile(filename string) int {
 
 func Part1_Seek(filename string) int {
 	f, open_err := os.Open(filename)
-	check(open_err)
+	utils.Check(open_err)
 	defer f.Close()
 
 	floor := 0
@@ -48,13 +42,13 @@ func Part1_Seek(filename string) int {
 
 	for {
 		_, seek_err = f.Seek(seek_offset, 0)
-		check(seek_err)
+		utils.Check(seek_err)
 
 		_, read_err = f.Read(b)
 		if read_err == io.EOF {
 			break
 		}
-		check(read_err)
+		utils.Check(read_err)
 
 		floor += findFloor(b)
 		seek_offset += read_size
@@ -80,7 +74,7 @@ func findFloor(input []byte) int {
 
 func Part2(filename string) (int64, error) {
 	f, open_err := os.Open(filename)
-	check(open_err)
+	utils.Check(open_err)
 	defer f.Close()
 
 	floor := 0
@@ -93,13 +87,13 @@ func Part2(filename string) (int64, error) {
 
 	for {
 		_, seek_err = f.Seek(seek_offset, 0)
-		check(seek_err)
+		utils.Check(seek_err)
 
 		_, read_err = f.Read(bytes)
 		if read_err == io.EOF {
 			break
 		}
-		check(read_err)
+		utils.Check(read_err)
 
 		for i, b := range bytes {
 			switch b {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc/utils"
 	"bufio"
 	"fmt"
 	"log"
@@ -14,15 +15,9 @@ func main() {
 	fmt.Println(Part2("../input.txt"))
 }
 
-func check(e error) {
-	if e != nil {
-		log.Fatal(e)
-	}
-}
-
 func Part1(filename string) int {
 	f, open_err := os.Open(filename)
-	check(open_err)
+	utils.Check(open_err)
 	defer f.Close()
 
 	total := 0
@@ -51,7 +46,7 @@ func Part1(filename string) int {
 
 func Part2(filename string) int {
 	f, open_err := os.Open(filename)
-	check(open_err)
+	utils.Check(open_err)
 	defer f.Close()
 
 	total := 0
