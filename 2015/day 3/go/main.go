@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	fmt.Println(Part2("../input.txt"))
+	fmt.Println(Part2("../case2.txt"))
 }
 
 func Part1(filename string) int {
@@ -24,6 +24,7 @@ func Part1(filename string) int {
 	const read_size = 10
 	var seek_offset int64 = 0
 	var seek_err error
+	var read_count int
 	var read_err error
 
 	bytes := make([]byte, read_size)
@@ -31,15 +32,20 @@ func Part1(filename string) int {
 	for {
 		_, seek_err = f.Seek(seek_offset, 0)
 		utils.Check(seek_err)
+		seek_offset += read_size
 
-		_, read_err = f.Read(bytes)
+		read_count, read_err = f.Read(bytes)
 		if read_err == io.EOF {
 			break
 		}
 		utils.Check(read_err)
 
 	ReadByteLoop:
-		for _, b := range bytes {
+		for i, b := range bytes {
+			if i >= read_count {
+				break
+			}
+
 			switch b {
 			case '^':
 				cur[1]++
@@ -59,7 +65,6 @@ func Part1(filename string) int {
 			}
 		}
 
-		seek_offset += read_size
 	}
 
 	return houses
@@ -78,11 +83,10 @@ func Part2(filename string) int {
 	m[*runner] = true
 	houses := 1
 
-	// `10` doesn't work but `100000`. Probably it works as long as reading the whole file at once. Might be because of the toggling logic is incorrect.
-	const read_size = 10
-	// const read_size = 100000
+	const read_size = 11
 	var seek_offset int64 = 0
 	var seek_err error
+	var read_count int
 	var read_err error
 
 	bytes := make([]byte, read_size)
@@ -94,15 +98,22 @@ func Part2(filename string) int {
 	for {
 		_, seek_err = f.Seek(seek_offset, 0)
 		utils.Check(seek_err)
+		seek_offset += read_size
 
-		_, read_err = f.Read(bytes)
+		// `Read` doesn't clear the byte array, so if it hasn't written new values into the whole array,
+		// values from the last read was still in there. That's when `read_count` is needed.
+		read_count, read_err = f.Read(bytes)
 		if read_err == io.EOF {
 			break
 		}
 		utils.Check(read_err)
 
 	ReadByteLoop:
-		for _, b := range bytes {
+		for i, b := range bytes {
+			if i >= read_count {
+				break
+			}
+
 			if isSantasTurn {
 				runner = &santa
 			} else {
@@ -130,10 +141,7 @@ func Part2(filename string) int {
 				m[*runner] = true
 				houses++
 			}
-
 		}
-
-		seek_offset += read_size
 	}
 
 	return houses
